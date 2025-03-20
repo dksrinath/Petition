@@ -761,6 +761,9 @@ if __name__ == '__main__':
     initialize_app_data()
     scheduler = BackgroundScheduler()
     scheduler.add_job(send_reminders, 'interval', hours=24)
-    scheduler.add_job(schedule_clustering, 'interval', hours=1)  # Run clustering every hour
+    scheduler.add_job(schedule_clustering, 'interval', hours=1)
     scheduler.start()
-    app.run(debug=True, use_reloader=False)
+    
+    # Get port from environment variable or use default
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False, use_reloader=False)
