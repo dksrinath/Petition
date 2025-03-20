@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container text-center mt-5">
+    <!-- Add current datetime display -->
+
+    <div class="jumbotron p-5 bg-light shadow-sm rounded">
+        <h1 class="display-5 fw-bold">Welcome to the Petition System</h1>
+        <p class="lead">Empowering citizens to raise their concerns and drive change.</p>
+        <div class="mt-4">
+            <a href="/petitions" class="btn btn-primary btn-lg">View Public Petitions</a>
+            {% if current_user.is_authenticated %}
+                <!-- Add View My Petitions button for authenticated users -->
+                <a href="/my_petitions" class="btn btn-success btn-lg">View My Petitions</a>
+                <a href="/upload_petition" class="btn btn-outline-primary btn-lg">Upload New Petition</a>
+            {% else %}
+                <a href="/register" class="btn btn-outline-success btn-lg">Get Started</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Add JavaScript for real-time datetime update -->
+<script>
+    function updateDateTime() {
+        const now = new Date();
+        const options = {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+            timeZone: 'UTC'
+        };
+        
+        const formattedDateTime = now.toLocaleString('en-US', options)
+            .replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$1-$2'); // Convert to YYYY-MM-DD format
+        
+        document.querySelector('.alert-info strong:first-child').nextSibling.textContent = 
+            ' ' + formattedDateTime;
+    }
+
+    // Update time every second
+    setInterval(updateDateTime, 1000);
+</script>
+{% endblock %}

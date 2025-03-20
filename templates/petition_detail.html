@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3>{{ petition.title }}</h3>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Status:</strong> 
+                        <span class="badge {% if status and status.name == 'Resolved' %}bg-success{% elif status and status.name == 'Pending' %}bg-warning{% else %}bg-primary{% endif %}">
+                            {{ status.name if status else 'Unknown Status' }}
+                        </span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>Priority:</strong> 
+                        <span class="badge {% if petition.priority == 'Urgent' %}bg-danger{% elif petition.priority == 'High' %}bg-warning{% else %}bg-info{% endif %}">
+                            {{ petition.priority }}
+                        </span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>Department:</strong> 
+                        <span class="badge bg-secondary">
+                            {{ department.name if department else 'Unassigned' }}
+                        </span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>Submitted on:</strong> {{ petition.upload_time.strftime('%Y-%m-%d %H:%M:%S') }}
+                    </div>
+                    
+                    <div class="petition-content mb-4">
+                        <h5>Petition Content:</h5>
+                        <div class="border p-3 bg-light" style="white-space: pre-line;">
+                            {{ petition.content_text }}
+                        </div>
+                    </div>
+                    
+                    {% if petition.file_name %}
+                        <div class="mb-3">
+                            <a href="{{ url_for('static', filename='uploads/' + petition.file_name) }}" class="btn btn-outline-primary" target="_blank">
+                                <i class="fas fa-file-alt"></i> View Original Document
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Comments Section -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Comments ({{ comments|length }})</h4>
+                </div>
+                <div class="card-body">
+                    {% if current_user.is_authenticated %}
+                        <form method="post" action="{{ url_for('add_comment', petition_id=petition.id) }}" class="mb-4">
+                            <div class="mb-3">
+                                <textarea class="form-control" name="comment_text" rows="3" placeholder="Add your comment..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Post Comment</button>
+                        </form>
+                    {% endif %}
+                    
+                    {% if comments %}
+                        {% for comment in comments %}
+                            <div class="comment mb-3 p-3 border rounded">
+                                <div class="d-flex justify-content-between">
+                                    <strong>{{ comment.user.name or comment.user.email }}</strong>
+                                    <small class="text-muted">{{ comment.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+                                </div>
+                                <p class="mt-2 mb-0">{{ comment.text }}</p>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-center text-muted">No comments yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <!-- Status Updates -->
+            {% if status_updates %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Status Updates</h4>
+                    </div>
+                    <div class="card-body">
+                        {% for update in status_updates %}
+                            <div class="status-update mb-3 p-2 border-bottom">
+                                <div class="d-flex justify-content-between">
+                                    <small class="text-muted">{{ update.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+                                </div>
+                                <p class="mb-1">
+                                    Status changed from 
+                                    <span class="badge bg-secondary">
+                                        {{ petition_statuses[update.old_status_id] if update.old_status_id in petition_statuses else 'Unknown' }}
+                                    </span> 
+                                    to 
+                                    <span class="badge bg-primary">
+                                        {{ petition_statuses[update.new_status_id] if update.new_status_id in petition_statuses else 'Unknown' }}
+                                    </span>
+                                </p>
+                                {% if update.notes %}
+                                    <p class="mb-0 small">{{ update.notes }}</p>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Similar Petitions -->
+            {% if similar_petitions %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Similar Petitions</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group">
+                            {% for similar in similar_petitions %}
+                                <a href="{{ url_for('view_petition', petition_id=similar.id) }}" class="list-group-item list-group-item-action">
+                                    {{ similar.title }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Administrative Actions -->
+            {% if current_user.is_authenticated and current_user.role in ['official', 'admin'] %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Administrative Actions</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="{{ url_for('update_status', petition_id=petition.id) }}" class="mb-3">
+                            <div class="mb-3">
+                                <label for="status_id" class="form-label">Update Status</label>
+                                <select class="form-select" name="status_id" id="status_id" required>
+                                    {% for status_id, status_name in petition_statuses.items() %}
+                                        <option value="{{ status_id }}" {% if petition.status_id == status_id %}selected{% endif %}>
+                                            {{ status_name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="notes" class="form-label">Notes</label>
+                                <textarea class="form-control" name="notes" id="notes" rows="3"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Update Status</button>
+                        </form>
+                        
+                        {% if current_user.role == 'admin' %}
+                            <hr>
+                            <form method="post" action="{{ url_for('assign_department', petition_id=petition.id) }}">
+                                <div class="mb-3">
+                                    <label for="department_id" class="form-label">Reassign Department</label>
+                                    <select class="form-select" name="department_id" id="department_id" required>
+                                        {% for dept in departments %}
+                                            <option value="{{ dept.id }}" {% if petition.department_id == dept.id %}selected{% endif %}>
+                                                {{ dept.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-outline-primary">Reassign Department</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Like Button -->
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <form method="post" action="{{ url_for('like_petition', petition_id=petition.id) }}">
+                        <button type="submit" class="btn btn-lg {% if user_liked %}btn-danger{% else %}btn-outline-danger{% endif %}">
+                            <i class="fas {% if user_liked %}fa-heart{% else %}fa-heart{% endif %}"></i> 
+                            {{ likes_count }} {{ 'Like' if likes_count == 1 else 'Likes' }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Manage Officials</h2>
+
+    <!-- Add New Official Form -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Add New Official</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="department" class="form-label">Department</label>
+                    <select class="form-select" id="department" name="department" required>
+                        <option value="">Select Department</option>
+                        {% for dept in departments %}
+                        <option value="{{ dept.name }}">{{ dept.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Official</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- List of Existing Officials -->
+    <div class="card">
+        <div class="card-header">
+            <h4>Current Officials</h4>
+        </div>
+        <div class="card-body">
+            {% if officials %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Department</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for official in officials %}
+                        <tr>
+                            <td>{{ official.name }}</td>
+                            <td>{{ official.email }}</td>
+                            <td>{{ official.department or 'Unassigned' }}</td>
+                            <td>
+                                <span class="badge bg-success">Active</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-center text-muted">No officials found.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

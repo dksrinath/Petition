@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Petition Statistics</h2>
+    
+    <!-- Department Statistics -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>📊 Petitions by Department</h3>
+        </div>
+        <div class="card-body">
+            {% if dept_stats %}
+                <div class="row">
+                    {% for dept in dept_stats %}
+                        <div class="col-md-4 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ dept.name }}</h5>
+                                    <p class="card-text">{{ dept.count }} petitions</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>No department data available.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Priority Statistics -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>⚡ Petitions by Priority</h3>
+        </div>
+        <div class="card-body">
+            {% if priority_stats %}
+                <div class="row">
+                    {% for priority in priority_stats %}
+                        <div class="col-md-3 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ priority.priority }}</h5>
+                                    <p class="card-text">{{ priority.count }} petitions</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>No priority data available.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Status Statistics -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>✅ Petitions by Status</h3>
+        </div>
+        <div class="card-body">
+            {% if status_stats %}
+                <div class="row">
+                    {% for status in status_stats %}
+                        <div class="col-md-4 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ status.name }}</h5>
+                                    <p class="card-text">{{ status.count }} petitions</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>No status data available.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Resolution Time -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>⏳ Average Resolution Time</h3>
+        </div>
+        <div class="card-body">
+            {% if avg_resolution_time %}
+                <p>Average time to resolution: {{ (avg_resolution_time / 86400) | round(1) }} days</p>
+            {% else %}
+                <p>No resolved petitions yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Clusters -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>📊 Similar Petition Clusters</h3>
+        </div>
+        <div class="card-body">
+            {% if clusters %}
+                {% for cluster_id, petitions in clusters.items() %}
+                    <div class="cluster-group mb-4">
+                        <h4>Cluster {{ cluster_id }}</h4>
+                        <div class="list-group">
+                            {% for petition in petitions %}
+                                <a href="{{ url_for('view_petition', petition_id=petition.id) }}" class="list-group-item list-group-item-action">
+                                    {{ petition.title }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No clusters available</p>
+            {% endif %}
+        </div>
+    </div>    
+</div>
+{% endblock %}

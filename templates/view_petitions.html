@@ -1,0 +1,70 @@
+<!-- Updated view_petitions.html -->
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Categorized Petitions</h2>
+    
+    <!-- Urgent Petitions -->
+    <div class="card mt-4 shadow-sm">
+        <div class="card-header bg-danger text-white">
+            <h4>🚨 Urgent Petitions</h4>
+        </div>
+        <div class="card-body">
+            {% if urgent_petitions %}
+                <ul class="list-group">
+                    {% for petition in urgent_petitions %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>{{ petition.title }}</strong>
+                            <a href="{{ url_for('static', filename='uploads/' + petition.file_name) }}" class="btn btn-sm btn-outline-light" target="_blank">View</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted text-center">No urgent petitions available.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- High Priority Petitions -->
+    <div class="card mt-4 shadow-sm">
+        <div class="card-header bg-warning text-dark">
+            <h4>⚡ High Priority Petitions</h4>
+        </div>
+        <div class="card-body">
+            {% if fast_petitions %}
+                <ul class="list-group">
+                    {% for petition in fast_petitions %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>{{ petition.title }}</strong>
+                            <a href="{{ url_for('static', filename='uploads/' + petition.file_name) }}" class="btn btn-sm btn-outline-dark" target="_blank">View</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted text-center">No high priority petitions available.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Normal Petitions -->
+    <div class="card mt-4 shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h4>✅ Normal Petitions</h4>
+        </div>
+        <div class="card-body">
+            {% if normal_petitions %}
+                <ul class="list-group">
+                    {% for petition in normal_petitions %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>{{ petition.title }}</strong>
+                            <a href="{{ url_for('static', filename='uploads/' + petition.file_name) }}" class="btn btn-sm btn-outline-light" target="_blank">View</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted text-center">No normal petitions available.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

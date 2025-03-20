@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petition System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f6f9;
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+        }
+        
+        .datetime-display {
+            color: #fff;
+            font-size: 0.9rem;
+            padding: 8px 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .datetime-display {
+                display: none;
+            }
+        }
+        
+        /* Flash message styling */
+        .alert {
+            margin-bottom: 1rem;
+            border-radius: 0.25rem;
+        }
+
+        /* Additional styling for alerts */
+        .alert-success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+            color: #0c5460;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            border-color: #ffeeba;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('home') }}">
+                Petition System
+            </a>
+            <div class="datetime-display d-none d-md-block">
+                <span id="current-datetime"></span>
+                {% if current_user.is_authenticated %}
+                <span class="ms-3">
+                    <i class="fas fa-user"></i> {{ current_user.email }}
+                </span>
+                {% endif %}
+            </div>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item"><a href="/upload_petition" class="nav-link">Upload Petition</a></li>
+                        <li class="nav-item"><a href="/dashboard" class="nav-link">Dashboard</a></li>
+                        <li class="nav-item"><a href="/logout" class="btn btn-danger">Logout</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Flash Messages Section -->
+    <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+    
+    <div class="container mt-4">
+        {% block content %}{% endblock %}
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function updateDateTime() {
+            const now = new Date();
+            
+            // Format time in HH:MM AM/PM format
+            let hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            const timeString = hours.toString().padStart(2, '0') + ':' + minutes + ' ' + ampm;
+            
+            // Format date in DD-MM-YYYY format
+            const day = now.getDate().toString().padStart(2, '0');
+            const month = (now.getMonth() + 1).toString().padStart(2, '0'); // January is 0!
+            const year = now.getFullYear();
+            const dateString = day + '-' + month + '-' + year;
+            
+            // Combine time and date
+            const formattedDateTime = timeString + ' ' + dateString;
+            
+            // Update the current-datetime element if it exists
+            const currentDatetimeElement = document.getElementById('current-datetime');
+            if (currentDatetimeElement) {
+                currentDatetimeElement.textContent = formattedDateTime;
+            }
+        }
+
+        // Update immediately and then every second
+        updateDateTime(); // Initial update
+        setInterval(updateDateTime, 1000);
+        
+        // Auto-dismiss flash messages after 5 seconds
+        setTimeout(function() {
+            const alertElements = document.querySelectorAll('.alert');
+            alertElements.forEach(function(alert) {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

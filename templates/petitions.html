@@ -1,0 +1,32 @@
+<!-- petitions.html -->
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Public Petitions</h2>
+    {% if petitions_by_department %}
+        {% for dept, petitions_list in petitions_by_department.items() %}
+            <h3 class="mt-4">{{ dept }}</h3>
+            <div class="row">
+                {% for petition in petitions_list %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ petition.title }}</h5>
+                                <p class="text-muted small">Uploaded on: {{ petition.upload_time.strftime('%Y-%m-%d') }}</p>
+                                <span class="badge bg-{% if petition.priority == 'Urgent' %}danger{% elif petition.priority == 'High' %}warning{% elif petition.priority == 'Normal' %}info{% else %}secondary{% endif %}">
+                                    {{ petition.priority }}
+                                </span>
+                                <a href="{{ url_for('static', filename='uploads/' + petition.file_name) }}" target="_blank" class="btn btn-outline-primary btn-sm mt-2 w-100">View Petition</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-info text-center" role="alert">
+            No public petitions available at the moment.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

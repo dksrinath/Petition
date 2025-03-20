@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Manage Departments</h2>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4>📌 Department List</h4>
+        </div>
+        <div class="card-body">
+            {% if departments %}
+                <table class="table table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Department Name</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for dept in departments %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ dept.name }}</td>
+                                <td>{{ dept.description or 'No description available' }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="text-muted text-center">No departments available.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h4>➕ Add New Department</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                <div class="form-floating mb-3">
+                    <input type="text" name="name" class="form-control" id="department_name" placeholder="Department Name" required>
+                    <label for="department_name">Department Name</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <textarea name="description" class="form-control" id="department_description" placeholder="Department Description" style="height: 100px"></textarea>
+                    <label for="department_description">Department Description (Optional)</label>
+                </div>
+                <button type="submit" class="btn btn-success w-100">Add Department</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

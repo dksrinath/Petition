@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Petition - Petition System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Upload Petition</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Petition Title *</label>
+                            <input type="text" class="form-control" id="title" name="title" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="content_type" class="form-label">How would you like to submit your petition?</label>
+                            <select class="form-select" id="content_type" name="content_type" onchange="toggleContentMethod()">
+                                <option value="file">Upload a File</option>
+                                <option value="text">Write Content Directly</option>
+                            </select>
+                        </div>
+                        
+                        <div id="file_upload_section" class="mb-3">
+                            <label for="file" class="form-label">Upload Document (PDF or TXT) *</label>
+                            <input type="file" class="form-control" id="file" name="file" accept=".pdf,.txt">
+                            <div class="form-text">Supported formats: PDF, TXT.</div>
+                        </div>
+                        
+                        <div id="text_content_section" class="mb-3" style="display: none;">
+                            <label for="content_text" class="form-label">Petition Content *</label>
+                            <textarea class="form-control" id="content_text" name="content_text" rows="8" placeholder="Write your petition content here..."></textarea>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="is_public" name="is_public" checked>
+                            <label class="form-check-label" for="is_public">Make this petition public</label>
+                            <div class="form-text">Public petitions can be viewed by all users. Private petitions are only visible to you and officials.</div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Submit Petition</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleContentMethod() {
+        const contentType = document.getElementById('content_type').value;
+        const fileSection = document.getElementById('file_upload_section');
+        const textSection = document.getElementById('text_content_section');
+        const fileInput = document.getElementById('file');
+        const textInput = document.getElementById('content_text');
+        
+        if (contentType === 'file') {
+            fileSection.style.display = 'block';
+            textSection.style.display = 'none';
+            fileInput.required = true;
+            textInput.required = false;
+        } else {
+            fileSection.style.display = 'none';
+            textSection.style.display = 'block';
+            fileInput.required = false;
+            textInput.required = true;
+        }
+    }
+</script>
+{% endblock %}
