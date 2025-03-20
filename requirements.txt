@@ -70,7 +70,7 @@ pydantic_core==2.27.2
 pydot==3.0.4
 Pygments==2.19.1
 pymongo==4.11.3
-PyMuPDF==1.25.4
+PyMuPDF==1.23.7
 pyparsing==3.2.1
 python-dateutil==2.9.0.post0
 python-engineio==4.11.2
